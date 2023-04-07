@@ -14,5 +14,5 @@ set transcripts=/rsstu/users/r/rrellan/sara/ref/Zea_mays.Zm-B73-REFERENCE-NAM-5.
     echo $sample 
     echo $par
     # Submit the bsub command to the job scheduler
-    bsub -R 'rusage[mem=4GB]' ${par} ./quant_sample.sh ${sample}
+    bsub -R 'rusage[mem=2GB]' ${par} ./quant_sample.sh ${sample}
   end
