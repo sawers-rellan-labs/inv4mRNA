@@ -1,8 +1,8 @@
 #!/usr/bin/csh
 #BSUB -J star_index
 #BSUB -n 1
-#BSUB -R "rusage[mem=16GB]"
-#BSUB -W 4:00
+#BSUB -R "rusage[mem=2GB]"
+#BSUB -W 00:20:00
 #BSUB -o %J.stdout
 #BSUB -e %J.stderr
 
