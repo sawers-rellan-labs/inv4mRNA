@@ -1,0 +1,29 @@
+  coef                model significant   loglike   k      AIC
+1    2            canonical       12416 -73346.94 226 147145.9
+2    2       canonical + ed       13493 -59522.28 351 119746.6
+3    2      canonical + Vem        9609 -67764.01 226 135980.0
+4    2             ed + Vem       10978 -58089.41 126 116430.8
+5    2 canonical + ed + Vem       10515 -58148.49 351 116999.0
+
+I can do enrchments on list for +P -P
+inv4 effects one  different pathways depending on treatment
+Add fold change threshold looking at the posterior mean matrix
+
+plot effect of invm in both treatments slope <1 if inv4m
+seek for patterns i the slope.
+
+GENOTYPE 4 PLANTS FIGURE Out what boundary it is.
+
+make model of phospholopid ~ genotype + treatment + pcs of expression
+
+just lm with phospholipid genes.
+
+data = data.frame(Trt,Geno,PC1,PC2,PC3,PC4)
+data$y = phospo
+data$x = expr   voom -> voomR$E[g1,]
+data$w = expr weight -> voomR$w[g1,]
+
+lm(x~Trt*Geno + PC1+PC2+PC3+PC4 + y,data,weights=w)  # weights are for x
+
+lm(y~Trt*Geno + PC1+PC2+PC3+PC4 + x,data) # no weights for y
+ 

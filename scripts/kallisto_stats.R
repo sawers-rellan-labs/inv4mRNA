@@ -33,6 +33,11 @@ kalqc
 
 colnames(sample_info)
 
+# check leaf number
+ggplot(sampleInfo, aes(y=leaf_number, x =genotype)) + 
+  ggbeeswarm::geom_quasirandom() + facet_wrap(~Treatment)
+anova(lm(data=sampleInfo,leaf_number ~ Treatment*genotype))
+
 
 #sum over genes
 # make gene _sample table
