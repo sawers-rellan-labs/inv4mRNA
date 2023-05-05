@@ -72,3 +72,4 @@ plot(1:5, means, ylim = range(ci), ylab = "Loglikelihood", xlab = "Model",
      main = "Cross-validated loglikelihoods by model")
 segments(1:5, ci[, 1], 1:5, ci[, 2], lwd = 2)
 points(1:5, means, pch = 19)
+

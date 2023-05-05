@@ -1,35 +1,50 @@
 library(dplyr)
+library(tidyr)
 library(ggplot2)
+library(lubridate)
 
 rna_ctn <- read.table("~/Desktop/tuberna_ctn.tab", sep = "\t", quote ="", header = TRUE)
-sample_info <- read.csv("~/Desktop/PENN-PHO22_TUBES.csv", quote ="", header =TRUE)
+sample_info <- read.csv("~/Desktop/PENN-PHO22-TUBES.csv", quote ="", header =TRUE)
 plots <- read.csv("~/Desktop/PENN_PHO22_PLOTS.csv")
 
+colnames(metadata)
+
 metadata <- rna_ctn %>%
-  dplyr::inner_join(sample_info, by= "tube") %>%
-  dplyr::inner_join(plots, by= c(row ="PHO22"))
+  dplyr::inner_join(sample_info, by= c(tube= "top_tag")) %>%
+  dplyr::inner_join(plots, by= c(row ="PHO22")) 
 
-metadata$leaf_tissue <- sub(".*_L","", metadata$side_tag, perl =TRUE) 
+Treatment
 
-metadata$leaf_tissue <- sub("L","", metadata$leaf_tissue, perl =TRUE) 
-metadata$leaf_tissue <- sub("R","", metadata$leaf_tissue, perl =TRUE) 
-metadata$leaf_tissue <- as.integer(metadata$leaf_tissue)
-metadata$leaf_tissue
+# correct R33 and # R34 they have the leaves swapped
+metadata$leaf_tissue[metadata$tube == 'R33'] = 2
+metadata$leaf_tissue[metadata$tube == 'R34'] = 1
+
+metadata <- within(metadata,{
+TIME = sub("1:","13:",metadata$TIME)
+TIME = hm(TIME)
+decimal_time <- hour(TIME)  + minute(TIME)/60 + second(TIME) / 3600
+}
+)
+
+metadata
 
 
-metadata$side_tag
+write.csv(
+  metadata %>%
+    dplyr::select(
+      tube:NCSU_RNA_plant,
+      Treatment, genotype, leaf_tissue, side_tag,
+      TIME, decimal_time, everything()
+      ), 
+  file="../data/inv4mRNAseq_metadata.csv", row.names = FALSE)
 
-metadata$TIME<- sub("1:","13:",metadata$TIME)
-# search gsl sample sheet
-
-write.csv(metadata, file="inv4mRNAseq_metadata.csv")
-
-write.csv()
 kalqc <- read.table("~/Desktop/kallisto_qc.tab", sep = "\t", quote ="", header = FALSE, skip =1)
 colnames(kalqc) <- c("gsl_sample","pseudoaligned_pct","pseudoaligned", "processed")
 kalqc$tube <- substr(kalqc$gsl_sample,1,3)
 
 kalqc
+
+#here you can decide to merge samples!!!
 
 colnames(sample_info)
 
@@ -42,8 +57,11 @@ anova(lm(data=sampleInfo,leaf_number ~ Treatment*genotype))
 #sum over genes
 # make gene _sample table
 
-library(dplyr)
-library(tidyr)
+# if you are thinikg in adding readcounts from poor qc libraries together
+# sampleInfo[sampleInfo$genotype=="CTRL" & sampleInfo$Treatment=="Low_P" & sampleInfo$leaf_tissue ==1, c("tube","row","Rep")]
+
+# this is for runing in the server
+
 samples <- dir("./quant_out")
 
 all_exp <-lapply(samples, function(x){
